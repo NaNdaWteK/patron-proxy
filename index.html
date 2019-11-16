@@ -1,0 +1,450 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Grupo de estudio de patrones</title>
+
+<link rel="stylesheet" href="css/reveal.css">
+<link rel="stylesheet" href="css/theme/night.css">
+<link rel='stylesheet' href='css/custom.css'>
+
+<!-- Theme used for syntax highlighting of code -->
+<link rel="stylesheet" href="lib/css/zenburn.css">
+
+<!-- Printing and PDF exports -->
+<script>
+	var link = document.createElement( 'link' );
+	link.rel = 'stylesheet';
+	link.type = 'text/css';
+	link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+	document.getElementsByTagName( 'head' )[0].appendChild( link );
+</script>
+
+<div class="reveal">
+	<div class="slides">
+		<section>
+			<section>
+				<img class='plain' style='width: 200px; height: 200px; background: transparent' data-src='./img/devscola.png' />
+				<h2>Patrón Proxy</h2>
+				<p>Se situa en medio entre el cliente y el objeto a utilizar, permitiendo actuar sobre la clase original sin necesidad de modificarla.</p>
+			</section>
+		</section>
+
+		<section>
+			<section>
+				<h3>Fases del grupo de estudio</h3>
+				<ul>
+					<li>Exploración del patrón</li>
+					<li>Implementación de referencia.</li>
+					<li>Metáforas.</li>
+				</ul>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Fase de exploración: Recursos</h3>
+				<ul>
+					<li>Head First Design Patterns</li>
+					<li>Design Patterns.</li>
+					<li>Refactoring Guru.</li>
+					<li>https://www.youtube.com/watch?v=NwaabHqPHeM.</li>
+					<li>...</li>
+				</ul>
+			</section>
+			<section>
+				<h3>Fase de exploración: Items</h3>
+				<ul>
+					<li>Es un objeto que controla por completo el acceso al objeto real.</li>
+					<li>Debe cumplir la misma interfaz que el objeto real.</li>
+					<li>Transparencia</li>
+					<li>Al actuar como mediador, puede enriquecer la petición</li>
+				</ul>
+			</section>
+			<section>
+				<h3>Fase de exploración: Tipos</h3>
+				<ul>
+					<li>Proxy de protección</li>
+					<li>Proxy remoto.</li>
+					<li>Proxy virtual.</li>
+					<li>Proxy de copia de escritura</li>
+				</ul>
+			</section>
+			<section>
+				<h3>Fase de exploración: Los concerns</h3>
+				<img class='plain' style='max-width: 450px;height: auto;' data-src='./img/how.jpg' />
+				<ul>
+					<li>¿Cambia el comportamiento del objeto?.</li>
+					<li>Revisar "controla por completo el acceso".</li>
+					<li>No estamos usando "la interfaz"</li>
+					<li>...</li>
+				</ul>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Fase de Implementación</h3>
+				<ul>
+					<li>Testeo de items.</li>
+					<li>Implementación sencilla y clara.</li>
+				</ul>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Proxy remoto</h3>
+				<p>Usa un cliente para responder a las llamadas del objeto remoto</p>
+			</section>
+			<section>
+				<h3>Proxy remoto: Test</h3>
+			</section>
+			<section>
+				<pre>
+					<code>
+class TestHttpClient < HttpClient
+  def post
+    :some_data
+  end
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'Usa un cliente http para responder a las llamadas del objeto remoto' do
+  expected_data = :some_data
+  proxy = RemoteProxy.new(TestHttpClient.new)
+
+  data = proxy.serialize
+
+  expect(data).to eq(expected_data)
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h3>Proxy remoto: Implementación</h3>
+			</section>
+			<section>
+				<h4>El http client</h4>
+				<pre>
+					<code>
+class HttpClient
+  def post
+  end
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h4>El proxy</h4>
+				<pre>
+					<code>
+class RemoteProxy
+  def initialize(http_client)
+    @http_client = http_client
+  end
+
+  def serialize
+    response = @http_client.post()
+
+    response
+  end
+end
+					</code>
+				</pre>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Proxy virtual</h3>
+				<p>Almacena o retrasa la carga de un recurso para minimizar el consumo del objeto real</p>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Proxy virtual: Lazy</h3>
+				<p>Retrasa la carga de un recurso hasta que es necesitado</p>
+			</section>
+			<section>
+				<h3>Lazy proxy: Test</h3>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'instancia el objeto real cuando lo necesita' do
+  proxy = LazyVirtualProxy.new
+
+  expect(Real).to receive(:new).and_call_original
+
+  proxy.execute
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'no se instancia más de una vez' do
+  proxy = LazyVirtualProxy.new
+
+  expect(Real).to receive(:new).once.and_call_original
+
+  proxy.execute
+  proxy.execute
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'no se inicializa al instanciar el proxy' do
+  expect(Real).not_to receive(:new)
+
+  LazyVirtualProxy.new
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h3>Lazy Proxy: Implementación</h3>
+			</section>
+			<section>
+				<h4>El objeto real</h4>
+				<pre>
+					<code>
+class Real
+  def execute
+    'some_data'
+  end
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h4>El proxy</h4>
+				<pre>
+					<code>
+class LazyVirtualProxy
+  def execute
+    acquire unless is_acquired_real_object?
+    @real.execute
+  end
+  private
+  def acquire
+    @real = Real.new
+  end
+  def is_acquired_real_object?
+    !@real.nil?
+  end
+end
+					</code>
+				</pre>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Proxy virtual: Cache</h3>
+				<p>Almacena un recurso para minimizar los accesos al mismo en el objeto real</p>
+			</section>
+			<section>
+				<h3>Proxy de cache: Test</h3>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'delega las llamadas al objeto real' do
+  proxy = CacheVirtualProxy.new
+
+  expect(proxy.execute).to eq 'some_data'
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'sólo la primera llamada al objeto real es procesada por este' do
+  proxy = CacheVirtualProxy.new
+
+  expect_any_instance_of(Real).to receive(:execute).once.and_call_original
+
+  proxy.execute
+  proxy.execute
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h3>Proxy de cache: Implementación</h3>
+			</section>
+			<section>
+				<h4>El objeto real</h4>
+				<pre>
+					<code>
+class Real
+	def execute
+		'some_data'
+	end
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h4>El proxy</h4>
+				<pre>
+					<code>
+class CacheVirtualProxy
+  def initialize
+    @real = Real.new
+    @cache = {}
+  end
+  def execute
+    if !cached?(:execute)
+      set(:execute, @real.execute)
+    end
+    get(:execute)
+  end
+  private
+  def set(key, value)
+    @cache[key] = value
+  end
+  def get(key)
+    @cache[key]
+  end
+  def cached?(key)
+    !@cache[key].nil?
+  end
+end
+					</code>
+				</pre>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Proxy de protección</h3>
+				<p>Un proxy de protección lo utilizaremos cuando queramos controlar el acceso a un recurso</p>
+			</section>
+			<section>
+				<h3>Proxy de protección: Test</h3>
+			</section>
+			<section>
+				<h4>El matcher</h4>
+				<pre>
+					<code>
+RSpec::Matchers.define :implement_interface do |expected|
+  match do |actual|
+    (actual.public_methods & expected.public_methods)==expected.public_methods
+  end
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'delega en el objeto real' do
+  proxy = ProtectionProxy.new
+    expect_any_instance_of(Real).to receive(:execute)
+  proxy.execute
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'controla el acceso al objeto real' do
+  proxy = ProtectionProxy.new
+  proxy.deny_access
+
+  expect{
+    proxy.execute
+  }.to raise_error('access denied')
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre>
+					<code>
+it 'cumple la misma interfaz que el objeto real' do
+  proxy = ProtectionProxy.new
+  real_object = Real.new
+
+  expect(proxy).to implement_interface(real_object)
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h3>Proxy de protección: Implementación</h3>
+			</section>
+			<section>
+				<h4>El objeto real</h4>
+				<pre>
+					<code>
+class Real
+  def execute
+    'some_data'
+  end
+end
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h4>El proxy</h4>
+				<pre>
+					<code>
+class ProtectionProxy
+  def initialize
+    @real = Real.new
+    @access = true
+  end
+  def execute
+    check_access!
+    @real.execute
+  end
+  def deny_access
+    @access = false
+  end
+  private
+  def check_access!
+    raise 'access denied' unless @access
+  end
+end
+					</code>
+				</pre>
+			</section>
+		</section>
+		<section>
+			<section>
+				<h3>Metáforas</h3>
+				<p>En esta fase implementamos situaciones reales en las que usaríamos un proxy</p>
+				<h4>https://gitlab.com/devscola/patrones-de-disenyo/tree/master/patrones-estructurales/proxy/metaforas</h4>
+			</section>
+		</section>
+	</div>
+	<div class='footer'>
+		<img class='plain' style='width: 40px; height: 40px' src='./img/devscola.png' />
+		<span>@devscola</span>
+	</div>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+	// More info https://github.com/hakimel/reveal.js#configuration
+	Reveal.initialize({
+		history: true,
+
+		// More info https://github.com/hakimel/reveal.js#dependencies
+		dependencies: [
+			{ src: 'plugin/markdown/marked.js' },
+			{ src: 'plugin/markdown/markdown.js' },
+			// { src: 'plugin/notes/notes.js', async: true },
+			{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+		]
+	});
+</script>
