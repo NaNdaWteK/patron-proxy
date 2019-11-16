@@ -1,7 +1,9 @@
-# Web components en Acción
+# Grupo de estudio de patrones de devscola
 
-Esto es una presentación básica sobre web components, esta presentación estará apoyada en una práctica de código para explicar más en profundidad como funciona.
+Juntos somos más fuertes
 
-Por y para @devscola, a la que no se le puede agradecer todo lo que da, entonces mejor, fluir con ella.
+## Master class: patrón proxy
 
-Puedes verla en [here](https://nandawtek.github.io/web-components-presentation/index.html#/)
+Exploración del patrón proxy por parte del grupo de estudio
+
+Puedes verlo en [here](https://nandawtek.github.io/patron-proxy/#/)
