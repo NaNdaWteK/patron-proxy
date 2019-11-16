@@ -2,8 +2,10 @@
 
 Juntos somos más fuertes
 
+https://trello.com/b/kfsRLi0p
+
 ## Master class: patrón proxy
 
 Exploración del patrón proxy por parte del grupo de estudio
 
-Puedes verlo en [here](https://nandawtek.github.io/patron-proxy/#/)
+Puedes verlo [aquí](https://nandawtek.github.io/patron-proxy/#/)
